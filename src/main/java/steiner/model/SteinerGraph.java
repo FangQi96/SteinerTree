@@ -36,16 +36,16 @@ public class SteinerGraph extends SimpleWeightedGraph{
     private double[][] adjmatrix;
     private ArrayList<double[]> pressure;
 
-    public Graph<Vertex, DefaultWeightedEdge> getGraph() {
+    public Graph<Vertex, Edge> getGraph() {
         return graph;
     }
 
-    private Graph<Vertex,DefaultWeightedEdge> graph;
+    private Graph<Vertex,Edge> graph;
 
     public SteinerGraph(int vertex_num){        //initialize an empty steiner graph with n vertices
         super(DefaultWeightedEdge.class);
         this.vertex_num = vertex_num;
-        this.graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        this.graph = new SimpleWeightedGraph<>(Edge.class);
         for(int i = 0;i<vertex_num;i++){
             graph.addVertex(new Vertex(i));
         }
@@ -57,7 +57,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
         vertex_num = adjmatrix[0].length;
         source_num = source.size();
         pressure = new ArrayList<>();
-        this.graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        this.graph = new SimpleWeightedGraph<>(Edge.class);
         for(int i=0;i<vertex_num-1;i++){
             for(int j=i+1;j<vertex_num;j++){
                 if(abs(adjmatrix[i][j])>0.000001) {

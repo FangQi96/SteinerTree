@@ -15,8 +15,8 @@ public class Steiner_Global {
         this.graph = graph;
     }
     private double I_0 = 1;     //todo
-    private double delta = 0.1;
-    private double rho = 0.1;
+    private double delta = 0.01;
+    private double rho = 0.01;
     private Set<Vertex> sourceSet;
 
     public void initial(){
@@ -103,7 +103,7 @@ public class Steiner_Global {
                 while(iterator_neighbor.hasNext()){     //for each neighbor of V_i, AKA V_j, update conductivity according to Eq6
                     sum = 0;
                     Vertex curr_neighbor = iterator_neighbor.next();
-                    Edge curr_edge = (Edge)graph.getEdge(curr_vertex,curr_neighbor);
+                    Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
                     double curr_conductivity = curr_edge.getConductivity();
                     for(int j=0;j<graph.getPressure().size();j++){
                        sum = sum + graph.getPressure().get(j)[curr_vertex.getName()] - graph.getPressure().get(j)[curr_neighbor.getName()];
@@ -126,7 +126,7 @@ public class Steiner_Global {
                             while(iterator_neighbor.hasNext()){
                                 Vertex curr_neighbor = iterator_neighbor.next();
                                 double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
-                                Edge curr_edge = (Edge)graph.getEdge(curr_vertex,curr_neighbor);
+                                Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
                                 sum_above = sum_above + curr_edge.getConductivity() * (pressure[curr_vertex.getName()] + pressure[curr_neighbor.getName()]);
                                 sum_below = sum_below + 2 * curr_edge.getConductivity();
                             }
@@ -139,7 +139,7 @@ public class Steiner_Global {
                         while(iterator_neighbor.hasNext()){
                             Vertex curr_neighbor = iterator_neighbor.next();
                             double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
-                            Edge curr_edge = (Edge)graph.getEdge(curr_vertex,curr_neighbor);
+                            Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
                             sum_above = sum_above + curr_edge.getConductivity() * (pressure[curr_vertex.getName()] + pressure[curr_neighbor.getName()]);
                             sum_below = sum_below + 2 * curr_edge.getConductivity();
                         }
