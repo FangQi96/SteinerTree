@@ -16,6 +16,6 @@ public class Edge extends DefaultWeightedEdge{      //methods to modify edge is 
     }
 
     public String toString(){
-        return "(vertex " + super.getSource() + " to " + "vertex " + super.getTarget() + ")";
+        return String.format("%.2f",this.getConductivity());
     }
 }

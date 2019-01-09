@@ -4,18 +4,34 @@ import org.apache.commons.math3.linear.*;
 import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
-
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.jgrapht.ext.*;
+import org.jgrapht.*;
+import org.jgrapht.graph.*;
+import com.mxgraph.layout.*;
+import com.mxgraph.swing.*;
+
+import javax.swing.*;
+import java.awt.*;
+
+
+
 public class Steiner_Global {
+    public SteinerGraph getGraph() {
+        return graph;
+    }
+
     private SteinerGraph graph;
+    private static final Dimension DEFAULT_SIZE = new Dimension(530,320);
     public Steiner_Global(SteinerGraph graph){
         this.graph = graph;
     }
     private double I_0 = 1;     //todo
-    private double delta = 0.01;
+    private double delta = 0.1;
     private double rho = 0.01;
     private Set<Vertex> sourceSet;
 
@@ -127,8 +143,8 @@ public class Steiner_Global {
                                 Vertex curr_neighbor = iterator_neighbor.next();
                                 double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
                                 Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
-                                sum_above = sum_above + curr_edge.getConductivity() * (pressure[curr_vertex.getName()] + pressure[curr_neighbor.getName()]);
-                                sum_below = sum_below + 2 * curr_edge.getConductivity();
+                                sum_above = sum_above + curr_edge.getConductivity() * (/*pressure[curr_vertex.getName()] + */ pressure[curr_neighbor.getName()]);
+                                sum_below = sum_below + /*2 */ curr_edge.getConductivity();
                             }
                             graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()))[curr_vertex.getName()] = sum_above / sum_below;
                         }
@@ -140,8 +156,8 @@ public class Steiner_Global {
                             Vertex curr_neighbor = iterator_neighbor.next();
                             double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
                             Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
-                            sum_above = sum_above + curr_edge.getConductivity() * (pressure[curr_vertex.getName()] + pressure[curr_neighbor.getName()]);
-                            sum_below = sum_below + 2 * curr_edge.getConductivity();
+                            sum_above = sum_above + curr_edge.getConductivity() * (/*pressure[curr_vertex.getName()] + */ pressure[curr_neighbor.getName()]);
+                            sum_below = sum_below + /*2 */ curr_edge.getConductivity();
                         }
                         graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()))[curr_vertex.getName()] = sum_above / sum_below;
                     }
@@ -149,5 +165,22 @@ public class Steiner_Global {
 
             }
         }
+    }
+
+    public void visualization(){
+        JFrame frame = new JFrame("Visualization");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        Graph<Vertex,Edge> g = graph.getGraph();
+        JGraphXAdapter<Vertex,Edge> graphXAdapter = new JGraphXAdapter<Vertex, Edge>(g);
+
+        mxIGraphLayout layout = new mxCompactTreeLayout(graphXAdapter);
+        layout.execute(graphXAdapter.getDefaultParent());
+
+        frame.add(new mxGraphComponent(graphXAdapter));
+
+        frame.pack();
+        frame.setLocationByPlatform(true);
+        frame.setVisible(true);
     }
 }
