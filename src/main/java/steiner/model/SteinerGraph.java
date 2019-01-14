@@ -6,6 +6,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.Math.abs;
 import static org.jgrapht.Graphs.addEdgeWithVertices;
@@ -42,6 +43,10 @@ public class SteinerGraph extends SimpleWeightedGraph{
 
     private Graph<Vertex,Edge> graph;
 
+    public SteinerGraph(){
+        super(DefaultWeightedEdge.class);
+    }
+
     public SteinerGraph(int vertex_num){        //initialize an empty steiner graph with n vertices
         super(DefaultWeightedEdge.class);
         this.vertex_num = vertex_num;
@@ -49,6 +54,18 @@ public class SteinerGraph extends SimpleWeightedGraph{
         for(int i = 0;i<vertex_num;i++){
             graph.addVertex(new Vertex(i));
         }
+    }
+
+    public SteinerGraph(Graph source){
+        super(DefaultWeightedEdge.class);
+        this.graph = source;
+        int vertex_num = source.vertexSet().size();
+        double[][] adjmatrix = new double[vertex_num][vertex_num];
+        Set<Edge> edgeSet = getGraph().edgeSet();
+        for(Edge edge:edgeSet){
+            adjmatrix[(int)edge.getSource()][(int)edge.getTarget()] = adjmatrix[(int)edge.getTarget()][(int)edge.getSource()] = edge.getWeight();
+        }
+        this.adjmatrix = adjmatrix;
     }
 
     public SteinerGraph(double[][] adjmatrix, List<Integer> source){      //initialize a graph with 2d-dimension square matrix
