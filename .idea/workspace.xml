@@ -2,16 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2fed6444-d18b-4e9d-bc2f-0a24f4abbaed" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_3_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/Tester/AdjacencyMatrixGenerator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/steiner/algo/Steiner_Global.class" afterPath="$PROJECT_DIR$/target/classes/steiner/algo/Steiner_Global.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/steiner/model/Vertex.class" afterPath="$PROJECT_DIR$/target/classes/steiner/model/Vertex.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/test-classes/Tester/GraphInitializerTest.class" afterPath="$PROJECT_DIR$/target/test-classes/Tester/GraphInitializerTest.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SteinerTree.iml" afterPath="$PROJECT_DIR$/SteinerTree.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java" afterPath="$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/steiner/model/Vertex.java" afterPath="$PROJECT_DIR$/src/main/java/steiner/model/Vertex.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java" afterPath="$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -33,18 +24,20 @@
       <file leaf-file-name="Steiner_Global.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="34" column="26" lean-forward="true" selection-start-line="34" selection-start-column="26" selection-end-line="34" selection-end-column="26" />
+            <state relative-caret-position="-216">
+              <caret line="35" column="41" lean-forward="false" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#initial#0;class#Steiner_Global#0" expanded="false" />
+                <element signature="method#setDelta#0;class#Steiner_Global#0" expanded="false" />
                 <element signature="method#visualization#0;class#Steiner_Global#0" expanded="false" />
-                <element signature="e#13075#13089#0" expanded="true" />
+                <element signature="e#13121#13135#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Vertex.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Vertex.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/steiner/model/Vertex.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="756">
@@ -58,11 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GraphInitializerTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="GraphInitializerTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="88" column="9" lean-forward="true" selection-start-line="88" selection-start-column="9" selection-end-line="88" selection-end-column="9" />
+            <state relative-caret-position="102">
+              <caret line="81" column="26" lean-forward="false" selection-start-line="81" selection-start-column="26" selection-end-line="81" selection-end-column="26" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -133,8 +126,8 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="27" />
-    <option name="width" value="1010" />
-    <option name="height" value="817" />
+    <option name="width" value="1000" />
+    <option name="height" value="824" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -481,12 +474,12 @@
       <workItem from="1550629974499" duration="4171000" />
       <workItem from="1551407538420" duration="6792000" />
       <workItem from="1551511355560" duration="5536000" />
-      <workItem from="1551680410018" duration="22883000" />
+      <workItem from="1551680410018" duration="30500000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="180428000" />
+    <option name="totallyTimeSpent" value="188045000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="27" width="1920" height="1053" extended-state="6" />
@@ -500,7 +493,7 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23814774" sideWeight="0.50208336" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.46857774" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46857774" sideWeight="0.49791667" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3296875" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -533,25 +526,25 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java</url>
-          <line>77</line>
+          <line>79</line>
           <properties />
           <option name="timeStamp" value="139" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java</url>
-          <line>121</line>
+          <line>119</line>
           <properties />
           <option name="timeStamp" value="141" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java</url>
-          <line>140</line>
+          <line>138</line>
           <properties />
           <option name="timeStamp" value="157" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java</url>
-          <line>139</line>
+          <line>137</line>
           <properties />
           <option name="timeStamp" value="158" />
         </line-breakpoint>
@@ -583,8 +576,10 @@
           <caret line="49" column="49" lean-forward="false" selection-start-line="49" selection-start-column="49" selection-end-line="49" selection-end-column="49" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#initial#0;class#Steiner_Global#0" expanded="false" />
+            <element signature="method#setDelta#0;class#Steiner_Global#0" expanded="false" />
             <element signature="method#visualization#0;class#Steiner_Global#0" expanded="false" />
-            <element signature="e#13075#13089#0" expanded="true" />
+            <element signature="e#13121#13135#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -647,8 +642,10 @@
           <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#initial#0;class#Steiner_Global#0" expanded="false" />
+            <element signature="method#setDelta#0;class#Steiner_Global#0" expanded="false" />
             <element signature="method#visualization#0;class#Steiner_Global#0" expanded="false" />
-            <element signature="e#13075#13089#0" expanded="true" />
+            <element signature="e#13121#13135#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -935,6 +932,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="81" column="26" lean-forward="false" selection-start-line="81" selection-start-column="26" selection-end-line="81" selection-end-column="26" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-216">
+          <caret line="35" column="41" lean-forward="false" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#initial#0;class#Steiner_Global#0" expanded="false" />
+            <element signature="method#setDelta#0;class#Steiner_Global#0" expanded="false" />
+            <element signature="method#visualization#0;class#Steiner_Global#0" expanded="false" />
+            <element signature="e#13121#13135#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/steiner/model/Vertex.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="756">
@@ -943,28 +964,6 @@
             <element signature="imports" expanded="true" />
             <element signature="e#205#206#0" expanded="true" />
             <element signature="e#232#233#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/steiner/algo/Steiner_Global.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="34" column="26" lean-forward="true" selection-start-line="34" selection-start-column="26" selection-end-line="34" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#visualization#0;class#Steiner_Global#0" expanded="false" />
-            <element signature="e#13075#13089#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/Tester/GraphInitializerTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="88" column="9" lean-forward="true" selection-start-line="88" selection-start-column="9" selection-end-line="88" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

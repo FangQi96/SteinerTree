@@ -1,14 +1,12 @@
 package steiner.algo;
 
 import org.apache.commons.math3.linear.*;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import org.jgrapht.ext.*;
 import org.jgrapht.*;
@@ -18,7 +16,7 @@ import com.mxgraph.swing.*;
 
 import javax.swing.*;
 import java.awt.*;
-
+import java.util.List;
 
 
 public class Steiner_Global {
@@ -32,10 +30,10 @@ public class Steiner_Global {
         this.graph = graph;
 //        setRho();
     }
-    private double I_0 = 10;     //todo
-    private double delta = 0.0012;
-    private double rho = 0.00015;
-    private double edge_threshold = 0.05;
+    private double I_0 = 1;     //todo
+    private double delta = 0.012;
+    private double rho = 0.015;
+    private double edge_threshold = 0.0000002;
 
     private void setRho(){
         Set<Edge> edgeSet = this.graph.getGraph().edgeSet();
@@ -176,6 +174,7 @@ public class Steiner_Global {
                 }
 
             }
+            this.cutEdge(T_c * edge_threshold);
             System.out.println(graph.getPressure().get(0)[2]);
         }
     }
@@ -262,27 +261,28 @@ public class Steiner_Global {
         frame.setVisible(true);
     }
 
-    public void cutEdge(){
-        Iterator<Edge> iterator_edge = graph.getGraph().edgeSet().iterator();
-        Collection<Edge> edgesToRemove = new HashSet<>();
-        double max = 0;
-        for(Edge e:graph.getGraph().edgeSet()){
+    public void cutEdge(double edge_threshold){
+        Set<Edge> edgeSet = graph.getGraph().edgeSet();
+
+/*        double max = 0;
+        for(Edge e:edgeSet){
             if(e.getConductivity()>max)
                 max = e.getConductivity();
         }
-        for(Edge e:graph.getGraph().edgeSet()){
+        for(Edge e:edgeSet){
             e.setConductivity(e.getConductivity()/max);
         }
+*/
+        List<Edge> edges = new ArrayList<>(edgeSet);
 
-
-        while(iterator_edge.hasNext()){
-            Edge curr_edge = iterator_edge.next();
-            if(curr_edge.getConductivity()<edge_threshold){
-                edgesToRemove.add(curr_edge);
-            }
+        for(int i=0;i<edges.size();i++){
+            if(edges.get(i).getConductivity()<edge_threshold)
+                graph.getGraph().removeEdge(edges.get(i));
+//            if(inspector.isConnected())
+//                continue;
+//           else
+//                graph.getGraph().addEdge((Vertex)edges.get(i).getSource(),(Vertex)edges.get(i).getTarget(),edges.get(i));
         }
-        graph.getGraph().removeAllEdges(edgesToRemove);
-
 
 
         Iterator<Vertex> iterator_vertex = graph.getGraph().vertexSet().iterator();
@@ -295,23 +295,11 @@ public class Steiner_Global {
         }
         graph.getGraph().removeAllVertices(vertexToRemove);
 
-        //Deal with the left Non-Source vertices in the graph
-        vertexToRemove.clear();
-        for(int i=0;i<50;i++) {
-            iterator_vertex = graph.getGraph().vertexSet().iterator();
-            while (iterator_vertex.hasNext()) {
-                Vertex curr_vertex = iterator_vertex.next();
-                if ((curr_vertex.getNeighbor(graph.getGraph()).size() == 1) && (!curr_vertex.isSource())) {
-                    vertexToRemove.add(curr_vertex);
-                }
-            }
-            graph.getGraph().removeAllVertices(vertexToRemove);
-        }
-
         double sum = 0;
         for(Edge e:graph.getGraph().edgeSet()){
             sum += e.getWeight();
         }
+
         System.out.println(sum);
     }
 }

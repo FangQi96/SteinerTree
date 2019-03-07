@@ -1,5 +1,7 @@
 package Tester;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import steiner.algo.Steiner_Global;
+import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
 
@@ -77,9 +79,8 @@ public class GraphInitializerTest {
         Steiner_Global global = new Steiner_Global(graph);
         global.initial();
 //        global.setDelta();
-        global.iteration(6000);
+        global.iteration(14000);
 //        Set<Edge> edgeSet = global.getGraph().getGraph().edgeSet();
-        global.cutEdge();
         Iterator<Vertex> vertexIterator = global.getGraph().getGraph().vertexSet().iterator();
         int count = 0;
         while(vertexIterator.hasNext()){
@@ -88,6 +89,8 @@ public class GraphInitializerTest {
                 count++;
         }
         if(count == sourceNum) {
+            ConnectivityInspector<Vertex,Edge> inspector = new ConnectivityInspector<>(graph.getGraph());
+            System.out.println(inspector.isConnected());
             global.visualization();
         }else{
             global.visualization();
