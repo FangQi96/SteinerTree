@@ -42,8 +42,11 @@ public class Vertex {
         this.isSource = false;
     }
 
-    public String toString(){
-        return "vertex " + name;
+    public String toString(){   //when using for visualization, the vertex's index begins from 1
+        if(this.isSource())
+            return "SRC " + (name+1);
+        else
+            return "" + (name+1);
     }
 
     public int hashCode(){

@@ -1,16 +1,12 @@
 package Tester;
-import org.jgrapht.Graph;
-import org.jgrapht.generate.ScaleFreeGraphGenerator;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
 import steiner.algo.Steiner_Global;
-import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
+
+import static org.apache.commons.lang3.RandomUtils.nextInt;
 /*********************************/
 /* the weight of the edge, AKA C_ij has a great influence on the result,
 adjusting rho in Steiner_Global.java to adapt to a specific given graph
@@ -18,66 +14,85 @@ adjusting rho in Steiner_Global.java to adapt to a specific given graph
  */
 /*********************************/
 public class GraphInitializerTest {
-    public static void main(String[] args0){
-        double[][] adjmatrix = {
-                {0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {6, 0, 2, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {1, 2, 0, 2, 0, 0, 8, 1, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
-                {0, 1, 2, 0, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 4, 0, 0, 0, 4, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 1, 4, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 8, 3, 0, 0, 0, 0, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0},
-                {0, 0, 0, 0, 2, 2, 1, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 6, 8, 3, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1, 0},
-                {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                {3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 1, 0, 0, 3, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 3, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0},
-                {0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 3, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 3},
-                {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 5, 0, 1},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3},
-                {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0, 3, 0}
-        };
-
-        double sum = 0;
-        int count = 0;
-        for(int i=0;i<22;i++){
-            for(int j=0;j<22;j++){
-                if((adjmatrix[i][j]-0)>0.0001){
-                    sum += adjmatrix[i][j];
-                    count++;
-                }
-            }
+    public static final int nodeNum= 441;
+    public static final int sourceNum = 20;
+    private static void randomGenerateSource(){
+        File sources = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");
+        try {
+            sources.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(sum/count);
-        System.out.println();
+        try {
+            ArrayList<Integer> arrayList = new ArrayList<>();
+            for(int i=0;i<nodeNum;i++){
+                arrayList.add(i+1);
+            }
+            Collections.shuffle(arrayList);
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(sources));
+            bufferedWriter.newLine();
+            for(int i=0;i<sourceNum;i++){
+                int sourceIndex = arrayList.get(i);
+                bufferedWriter.write(String.valueOf(sourceIndex));
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        List<Integer> list = new ArrayList<>();
-        list.add(2);
-        list.add(4);
-        list.add(8);
-        list.add(13);
-        list.add(17);
-        list.add(20);
-        SteinerGraph graph = new SteinerGraph(adjmatrix,list);
+    }
+    public static void main(String[] args0){
+        File file = new File("/home/longinus/Documents/SteinerTree/streetest/p2p.txt");     //file of the network
+        Scanner sc = null;
+        try {
+            sc = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        double[][] adjmatrix = new double[nodeNum][nodeNum];
+        int col,row;
+        double cost;
+        while(sc.hasNext()){
+            col = sc.nextInt() - 1;
+            row = sc.nextInt() - 1;
+            cost = sc.nextDouble();
+            adjmatrix[col][row] = cost;
+        }
+
+//        randomGenerateSource();     //randomly generate sources
+
+        List<Integer> sources = new ArrayList<>();
+        File file_source = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");       //file of the sources
+        try {
+            Scanner sc1 = new Scanner(file_source);
+            for(int i=0;i<sourceNum;i++){
+                sources.add(sc1.nextInt() - 1);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        SteinerGraph graph = new SteinerGraph(adjmatrix,sources);
         Steiner_Global global = new Steiner_Global(graph);
         global.initial();
-        global.setDelta();
-        global.iteration(11000);
-        Set<Edge> edgeSet = global.getGraph().getGraph().edgeSet();
+//        global.setDelta();
+        global.iteration(6000);
+//        Set<Edge> edgeSet = global.getGraph().getGraph().edgeSet();
         global.cutEdge();
-        global.visualization();
+        Iterator<Vertex> vertexIterator = global.getGraph().getGraph().vertexSet().iterator();
+        int count = 0;
+        while(vertexIterator.hasNext()){
+            Vertex curr_vertex = vertexIterator.next();
+            if(curr_vertex.isSource())
+                count++;
+        }
+        if(count == sourceNum) {
+            global.visualization();
+        }else{
+            global.visualization();
+            System.out.println("Fail to find the Steiner Tree, " + count + " sources in total.");
+        }
 
-/*        ScaleFreeGraphGenerator<Integer,DefaultWeightedEdge> generator = new ScaleFreeGraphGenerator<>(10);
-        SimpleWeightedGraph<Integer,DefaultWeightedEdge> target = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
-        generator.generateGraph(target);
-        SteinerGraph steinerGraph = new SteinerGraph(target);
-        Steiner_Global test = new Steiner_Global(steinerGraph);
-        test.visualization();*/
     }
 }
