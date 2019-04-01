@@ -1,7 +1,7 @@
 package steiner.model;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-public class Edge extends DefaultWeightedEdge{      //methods to modify edge is defined in the graph class
+public class Edge extends DefaultWeightedEdge{      //Methods for modifying edge is defined in the graph class
     private double conductivity;
     public Edge(){
         conductivity = 1;

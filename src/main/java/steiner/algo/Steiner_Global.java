@@ -1,21 +1,22 @@
 package steiner.algo;
 
+import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.layout.mxOrganicLayout;
+import com.mxgraph.swing.mxGraphComponent;
 import org.apache.commons.math3.linear.*;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
-import java.awt.*;
 import java.util.*;
 
 import org.jgrapht.ext.*;
 import org.jgrapht.*;
-import org.jgrapht.graph.*;
-import com.mxgraph.layout.*;
-import com.mxgraph.swing.*;
+import org.jgrapht.Graph;
+//import com.mxgraph.layout.*;
+//import com.mxgraph.swing.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
 
@@ -24,24 +25,22 @@ public class Steiner_Global {
         return graph;
     }
 
+    private double prev_edge_sum;
     private SteinerGraph graph;
-    private static final Dimension DEFAULT_SIZE = new Dimension(1000,800);
     public Steiner_Global(SteinerGraph graph){
         this.graph = graph;
-//        setRho();
     }
-    private double I_0 = 1;     //todo
-    private double delta = 0.012;
-    private double rho = 0.015;
-    private double edge_threshold = 0.0000002;
 
-    private void setRho(){
-        Set<Edge> edgeSet = this.graph.getGraph().edgeSet();
-        for(Edge e:edgeSet){
-            rho += e.getWeight();
-        }
-        rho = 2 / rho;
+    public Steiner_Global(SteinerGraph graph,double rho,double edge_threshold){
+        this.graph = graph;
+        this.rho = rho;
+        this.edge_threshold = edge_threshold;
     }
+
+    private double I_0 = 1;   //todo
+    private double delta = 0.0012;
+    private double rho = 0.06;
+    private double edge_threshold = 0.000000004;
 
     private Set<Vertex> sourceSet;
 
@@ -61,6 +60,7 @@ public class Steiner_Global {
         Vertex curr_vertex,curr_source;
 
 /***-------------------------init the matrix----------------------***/
+        double[][] adjmatrix = this.graph.getAdjmatrix();
         while(iterator_source.hasNext()){
             iterator = vertexSet.iterator();
             curr_source = iterator_source.next();
@@ -76,11 +76,11 @@ public class Steiner_Global {
                         while(iterator_neighbor.hasNext()){  //for each neighbor
                             Vertex curr_neighbor = iterator_neighbor.next();
                             coefficients[curr_vertex.getName()][curr_neighbor.getName()] = 1;
-                            constant[curr_vertex.getName()] = (graph.getSource_num()-1) * I_0;
+                            constant[curr_vertex.getName()] = (graph.getSource_num()-1) * I_0 * adjmatrix[curr_vertex.getName()][curr_neighbor.getName()];  //or upside down?
                         }
                     }else{      //is source but not Vk
                         iterator_neighbor = curr_vertex.getNeighbor(graph.getGraph()).iterator();
-                        constant[curr_vertex.getName()] = I_0;
+                        constant[curr_vertex.getName()] = I_0 ;
                         coefficients[curr_vertex.getName()][curr_vertex.getName()] = curr_vertex.getNeighbor(graph.getGraph()).size();
                         while(iterator_neighbor.hasNext()){
                             coefficients[curr_vertex.getName()][iterator_neighbor.next().getName()] = -1;
@@ -109,14 +109,53 @@ public class Steiner_Global {
 
     }
 
-    public void iteration(int T_c){
-
-/*        int[] source_list = new int[graph.getSource_list().size()];
-
-        for(int i=0;i<source_list.length;i++){
-            source_list[i] = graph.getSource_list().get(i);
+    public void initial_changed(){
+        double[][] adjmatrix = this.graph.getAdjmatrix();
+        sourceSet  = new HashSet<>();
+        for(Vertex vertex:this.graph.getGraph().vertexSet()){
+            if(vertex.isSource()) {
+                sourceSet.add(vertex);
+                graph.getSource_list().add(vertex.getName());
+            }
         }
-*/
+
+        for(Vertex sink:sourceSet){   //Take one source as sink each loop
+            double[][] coefficients = new double[graph.getGraph().vertexSet().size()][graph.getGraph().vertexSet().size()];
+            double[] constant = new double[graph.getGraph().vertexSet().size()];
+            for(Vertex curr_vertex:this.graph.getGraph().vertexSet()){  //get the constant done
+                if(curr_vertex.isSource()){     //is source
+                    if(curr_vertex.getName()==sink.getName()){  //is source & sink
+                        constant[curr_vertex.getName()] = -(graph.getSource_num()-1) * I_0;
+                    }else{  //is source but not sink
+                        constant[curr_vertex.getName()] = I_0;
+                    }
+                }else{  //not source
+                    constant[curr_vertex.getName()] = 0;
+                }
+            }
+
+            for(Vertex curr_vertex:this.graph.getGraph().vertexSet()){  //get the coefficients done
+                double P_i_coefficient = 0;
+                for(Vertex neighbor:curr_vertex.getNeighbor(graph.getGraph())){ //for each neighbor
+                    int curr_index = curr_vertex.getName();
+                    int neighbor_index = neighbor.getName();
+                    double conductivity = graph.getGraph().getEdge(curr_vertex,neighbor).getConductivity();
+                    P_i_coefficient += (conductivity / adjmatrix[curr_index][neighbor_index]);
+                    coefficients[curr_index][neighbor_index] = - conductivity / adjmatrix[curr_index][neighbor_index];
+                }
+                coefficients[curr_vertex.getName()][curr_vertex.getName()] = P_i_coefficient;
+            }
+
+            RealMatrix matrix = new Array2DRowRealMatrix(coefficients,false);
+            DecompositionSolver solver = new QRDecomposition(matrix).getSolver();
+            RealVector vector = new ArrayRealVector(constant);
+            graph.getPressure().add(solver.solve(vector).toArray());
+            System.out.println("Done calculating pressure with " + sink.getName() + " as sink.");
+        }
+    }
+
+    public double iteration(int T_c){
+
         for(int i=0;i<T_c;i++){     //for each loop
             Set<Vertex> vertexSet = graph.getGraph().vertexSet();
             Iterator<Vertex> iterator_vertex = vertexSet.iterator();
@@ -174,76 +213,33 @@ public class Steiner_Global {
                 }
 
             }
-            this.cutEdge(T_c * edge_threshold);
-            System.out.println(graph.getPressure().get(0)[2]);
-        }
-    }
 
-    public void setDelta() {
-        Set<Vertex> vertexSet = graph.getGraph().vertexSet();
-        Iterator<Vertex> iterator_vertex = vertexSet.iterator();
-        double tmp = 0;
-        int count = 0;
-
-        while(iterator_vertex.hasNext()){   //for each vertex V_i
-            Vertex curr_vertex = iterator_vertex.next();
-            Iterator<Vertex> iterator_neighbor = curr_vertex.getNeighbor(graph.getGraph()).iterator();
-            double sum;
-
-            while(iterator_neighbor.hasNext()){     //for each neighbor of V_i, AKA V_j, update conductivity according to Eq6
-                sum = 0;
-                Vertex curr_neighbor = iterator_neighbor.next();
-                Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
-                double curr_conductivity = curr_edge.getConductivity();
-                for(int j=0;j<graph.getPressure().size();j++){
-                    sum = sum + graph.getPressure().get(j)[curr_vertex.getName()] - graph.getPressure().get(j)[curr_neighbor.getName()];
-                }
-                sum = Math.abs(sum);
-                if(sum>0.001){
-                    tmp = tmp + 1/sum;
-                    count++;
-                }
-                double K_ij = 1 + delta * sum - rho * graph.getAdjmatrix()[curr_vertex.getName()][curr_neighbor.getName()];
-                curr_edge.setConductivity(K_ij * curr_conductivity);
-            }
-
-            Iterator<Vertex> iterator_source = this.sourceSet.iterator();
-            while(iterator_source.hasNext()){
-                Vertex curr_source = iterator_source.next();
-                if(curr_vertex.isSource()){     //is source
-                    if(curr_source.getName() == curr_vertex.getName()){     //is source & Vk
-                        graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()))[curr_vertex.getName()] = 0;
-                    }else{      //is source but not Vk
-                        double sum_above = I_0;
-                        double sum_below = 0;
-                        iterator_neighbor = curr_vertex.getNeighbor(graph.getGraph()).iterator();
-                        while(iterator_neighbor.hasNext()){
-                            Vertex curr_neighbor = iterator_neighbor.next();
-                            double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
-                            Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
-                            sum_above = sum_above + curr_edge.getConductivity() * (/*pressure[curr_vertex.getName()] +*/ pressure[curr_neighbor.getName()]);
-                            sum_below = sum_below + /*2 */ curr_edge.getConductivity();
+            ConnectivityInspector<Vertex,Edge> inspector = new ConnectivityInspector<>(this.graph.getGraph());
+            if(!inspector.isConnected()){
+                List<Set<Vertex>> subgraph = inspector.connectedSets();
+                int count = 0;
+                for(Set<Vertex> graph:subgraph){
+                    for(Vertex v:graph){
+                        if(v.isSource()) {
+                            count++;
+                            break;
                         }
-                        graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()))[curr_vertex.getName()] = sum_above / sum_below;
                     }
-                }else{      //not source
-                    double sum_above = 0;
-                    double sum_below = 0;
-                    iterator_neighbor = curr_vertex.getNeighbor(graph.getGraph()).iterator();
-                    while(iterator_neighbor.hasNext()){
-                        Vertex curr_neighbor = iterator_neighbor.next();
-                        double[] pressure = graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()));
-                        Edge curr_edge = graph.getGraph().getEdge(curr_vertex,curr_neighbor);
-                        sum_above = sum_above + curr_edge.getConductivity() * (/*pressure[curr_vertex.getName()] +*/  pressure[curr_neighbor.getName()]);
-                        sum_below = sum_below + /*2 */ curr_edge.getConductivity();
-                    }
-                    graph.getPressure().get(graph.getSource_list().indexOf(curr_source.getName()))[curr_vertex.getName()] = sum_above / sum_below;
+                }
+                if(count>1){
+                    System.out.println("Max loop time: " + (i-1));
+                    return prev_edge_sum;
                 }
             }
-        }
-        this.delta = tmp / count;
 
+            prev_edge_sum = graph.getEdgeWeightSum();
+
+            this.cutEdgeProportional(edge_threshold*i);
+
+        }
+        return prev_edge_sum;       //potential bug here
     }
+
     public void visualization(){
         JFrame frame = new JFrame("Visualization");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -261,27 +257,14 @@ public class Steiner_Global {
         frame.setVisible(true);
     }
 
-    public void cutEdge(double edge_threshold){
+    public double cutEdge(double edge_threshold){
         Set<Edge> edgeSet = graph.getGraph().edgeSet();
 
-/*        double max = 0;
-        for(Edge e:edgeSet){
-            if(e.getConductivity()>max)
-                max = e.getConductivity();
-        }
-        for(Edge e:edgeSet){
-            e.setConductivity(e.getConductivity()/max);
-        }
-*/
         List<Edge> edges = new ArrayList<>(edgeSet);
 
         for(int i=0;i<edges.size();i++){
             if(edges.get(i).getConductivity()<edge_threshold)
                 graph.getGraph().removeEdge(edges.get(i));
-//            if(inspector.isConnected())
-//                continue;
-//           else
-//                graph.getGraph().addEdge((Vertex)edges.get(i).getSource(),(Vertex)edges.get(i).getTarget(),edges.get(i));
         }
 
 
@@ -300,6 +283,46 @@ public class Steiner_Global {
             sum += e.getWeight();
         }
 
-        System.out.println(sum);
+        System.out.println("Sum of edges: " + sum);
+        return sum;
+    }
+
+    public double cutEdgeProportional(double edge_threshold){
+        List<Edge> edges = new ArrayList<>(graph.getGraph().edgeSet());
+        Collection<Edge> edgesToRemove = new HashSet<>();
+        for(Edge e:edges){
+            Vertex source = (Vertex)e.getSource();
+            Vertex target = (Vertex)e.getTarget();
+            double source_sum,target_sum,P_source,P_target;
+            P_source = 1/(graph.getGraph().incomingEdgesOf(source).size()*(1.2-edge_threshold));
+            P_target = 1/(graph.getGraph().incomingEdgesOf(target).size()*(1.2-edge_threshold));
+            source_sum = target_sum = 0;
+            for(Edge e1:graph.getGraph().incomingEdgesOf(source))
+                source_sum += e1.getConductivity();
+            for(Edge e1:graph.getGraph().incomingEdgesOf(target))
+                target_sum += e1.getConductivity();
+            if(e.getConductivity()/source_sum<P_source&&e.getConductivity()/target_sum<P_target)
+                edgesToRemove.add(e);
+
+        }
+        graph.getGraph().removeAllEdges(edgesToRemove);
+
+        Iterator<Vertex> iterator_vertex = graph.getGraph().vertexSet().iterator();
+        Collection<Vertex> vertexToRemove = new HashSet<>();
+        while(iterator_vertex.hasNext()){
+            Vertex curr_vertex = iterator_vertex.next();
+            if(curr_vertex.getNeighbor(graph.getGraph()).size() == 0||(curr_vertex.getNeighbor(graph.getGraph()).size()==1&&!curr_vertex.isSource())){
+                vertexToRemove.add(curr_vertex);
+            }
+        }
+        graph.getGraph().removeAllVertices(vertexToRemove);
+
+        double sum = 0;
+        for(Edge e:graph.getGraph().edgeSet()){
+            sum += e.getWeight();
+        }
+
+        System.out.println("Sum of edges: " + sum);
+        return sum;
     }
 }

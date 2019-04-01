@@ -1,7 +1,7 @@
 package Tester;
 import org.apache.commons.math3.linear.*;
 
-public class MatrixSolverTest {
+public class MatrixSolverTest {     //Example of using the math3 lib to solve the matrix
     public static void main(String[] args0) {
         RealMatrix coefficients = new Array2DRowRealMatrix(new double[][]{{3,-1,-1,-1}, {-1, 1, 0, 0},
                 {1,0,0,0}, {-1,0,0,1}}, false);

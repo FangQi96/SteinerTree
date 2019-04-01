@@ -16,8 +16,8 @@ adjusting rho in Steiner_Global.java to adapt to a specific given graph
  */
 /*********************************/
 public class GraphInitializerTest {
-    public static final int nodeNum= 441;
-    public static final int sourceNum = 20;
+    public static final int nodeNum= 100;
+    public static final int sourceNum = 5;
     private static void randomGenerateSource(){
         File sources = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");
         try {
@@ -46,7 +46,7 @@ public class GraphInitializerTest {
 
     }
     public static void main(String[] args0){
-        File file = new File("/home/longinus/Documents/SteinerTree/streetest/p2p.txt");     //file of the network
+        File file = new File("/home/longinus/Documents/SteinerTree/streetest/test111.txt");     //file of the network
         Scanner sc = null;
         try {
             sc = new Scanner(file);
@@ -59,8 +59,8 @@ public class GraphInitializerTest {
         while(sc.hasNext()){
             col = sc.nextInt() - 1;
             row = sc.nextInt() - 1;
-            cost = sc.nextDouble();
-            adjmatrix[col][row] = cost;
+            cost = sc.nextInt()/10000.0;
+            adjmatrix[col][row]  = adjmatrix[row][col] = cost;
         }
 
 //        randomGenerateSource();     //randomly generate sources
@@ -75,27 +75,47 @@ public class GraphInitializerTest {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        SteinerGraph graph = new SteinerGraph(adjmatrix,sources);
-        Steiner_Global global = new Steiner_Global(graph);
-        global.initial();
-//        global.setDelta();
-        global.iteration(14000);
-//        Set<Edge> edgeSet = global.getGraph().getGraph().edgeSet();
-        Iterator<Vertex> vertexIterator = global.getGraph().getGraph().vertexSet().iterator();
-        int count = 0;
-        while(vertexIterator.hasNext()){
-            Vertex curr_vertex = vertexIterator.next();
-            if(curr_vertex.isSource())
-                count++;
-        }
-        if(count == sourceNum) {
-            ConnectivityInspector<Vertex,Edge> inspector = new ConnectivityInspector<>(graph.getGraph());
-            System.out.println(inspector.isConnected());
-            global.visualization();
-        }else{
-            global.visualization();
-            System.out.println("Fail to find the Steiner Tree, " + count + " sources in total.");
+
+        List<Double> ans = new ArrayList<>();
+
+        for(int i=1;i<2;i++) {
+            for(int j=1;j<2;j++) {
+                SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
+                Steiner_Global global = new Steiner_Global(graph, i*0.0002, 0.00001);
+
+                global.initial_changed();
+                ans.add(global.iteration(180280) + i*10000 + j*1000);
+                Iterator<Vertex> vertexIterator = global.getGraph().getGraph().vertexSet().iterator();
+                int count = 0;
+                while (vertexIterator.hasNext()) {
+                    Vertex curr_vertex = vertexIterator.next();
+                    if (curr_vertex.isSource())
+                        count++;
+                }
+                if (count == sourceNum) {
+                    ConnectivityInspector<Vertex, Edge> inspector = new ConnectivityInspector<>(graph.getGraph());
+                    System.out.println(inspector.isConnected());
+                    global.visualization();
+                } else {
+                    System.out.println("Fail to find the Steiner Tree, " + count + " sources in total.");
+                }
+            }
         }
 
+        Collections.sort(ans, new Comparator<Double>() {
+            @Override
+            public int compare(Double o1, Double o2) {
+                if(o1%1000 - o2%1000 < -(10E-5))
+                    return -1;
+                else if(o1%1000 - o2%1000 > 10E-5)
+                    return 1;
+                else
+                    return 0;
+            }
+        });
+
+        for(double sum:ans){
+            System.out.println(sum);
+        }
     }
 }

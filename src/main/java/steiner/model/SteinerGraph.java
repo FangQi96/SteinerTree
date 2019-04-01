@@ -25,15 +25,10 @@ public class SteinerGraph extends SimpleWeightedGraph{
         return pressure;
     }
 
-    public void setPressure(ArrayList<double[]> pressure) {
-        this.pressure = pressure;
-    }
-
     public double[][] getAdjmatrix() {
         return adjmatrix;
     }
 
-    //private int edge_num = 0;     //todo
     private double[][] adjmatrix;
     private ArrayList<double[]> pressure;
 
@@ -75,7 +70,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
         source_num = source.size();
         pressure = new ArrayList<>();
         this.graph = new SimpleWeightedGraph<>(Edge.class);
-        for(int i=0;i<vertex_num-1;i++){
+        for(int i=0;i<vertex_num-1;i++){        //Only iterate upper half of the matrix
             for(int j=i+1;j<vertex_num;j++){
                 if(abs(adjmatrix[i][j])>0.000001) {
                     Vertex vertex_i, vertex_j;
@@ -93,6 +88,14 @@ public class SteinerGraph extends SimpleWeightedGraph{
         }
     }
 
+    public double getEdgeWeightSum(){
+        Set<Edge> edges = this.graph.edgeSet();
+        double sum = 0;
+        for(Edge e:edges){
+            sum += e.getWeight();
+        }
+        return sum;
+    }
 
     public int getSource_num() {
         return source_num;

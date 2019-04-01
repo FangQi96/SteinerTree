@@ -14,7 +14,7 @@ public class Vertex {
 
     private final int name;
 
-    private Point2D coordinate = new Point2D.Double();
+    private Point2D coordinate = new Point2D.Double();      //For potential need of calculating the physical distance
 
     public boolean isSource() {
         return isSource;
