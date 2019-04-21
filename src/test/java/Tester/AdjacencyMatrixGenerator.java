@@ -1,7 +1,5 @@
 package Tester;
 
-import java.util.Random;
-
 public class AdjacencyMatrixGenerator {
     public static void main(String[] args){
         double[][] adjmatrix = {
