@@ -14,17 +14,17 @@ public class Vertex {
         this.server = server;
     }
 
-    public Thread getServerThread() {
-        return serverThread;
+    public DistributedServer getServer() {
+        return server;
     }
 
-    public void setServerThread(Thread serverThread) {
-        this.serverThread = serverThread;
-    }
-
-    private Thread serverThread;
     private DistributedServer server;
-    private HashMap<Integer,Vertex> neighbors = new HashMap<>();
+
+    public HashMap<Integer, Vertex> getNeighborMap() {
+        return neighborMap;
+    }
+
+    private HashMap<Integer,Vertex> neighborMap = new HashMap<>();
 
     public int getName() {
         return name;
@@ -46,6 +46,12 @@ public class Vertex {
         return neighborsPressureLocal;
     }
 
+    public HashMap<Vertex, Edge> getNeighborEdgeMap() {
+        return neighborEdgeMap;
+    }
+
+    private HashMap<Vertex,Edge> neighborEdgeMap = new HashMap<>();
+
     private final int name;
 
     public boolean isSource() {
@@ -53,40 +59,43 @@ public class Vertex {
     }
 
     private boolean isSource;
+    private boolean isCompleted = false;
 
     public Vertex getNeighborByName(int neighborName){
-        return this.neighbors.get(neighborName);
+        return this.neighborMap.get(neighborName);
     }
 
     public List<Vertex> getNeighbor(Graph<Vertex,Edge> graph){
-        List neighbors = predecessorListOf(graph,this);
-        return neighbors;
+        List neighborList = predecessorListOf(graph,this);
+        return neighborList;
     }
 
     public Set<Vertex> getNeighbors(SteinerGraph steinerGraph){
         Set<Vertex> neighbors = new HashSet<>();
         Set<Vertex> vertexSet = steinerGraph.getGraph().vertexSet();
-        this.neighbors.clear();
+        this.neighborMap.clear();
         for(Vertex vertex:vertexSet){
-            if(steinerGraph.getGraph().getEdge(this,vertex)!=null) {
+            Edge edge = steinerGraph.getGraph().getEdge(this,vertex);
+            if(edge!=null) {
+                Edge local = (Edge)edge.clone();
+                neighborEdgeMap.put(vertex,local);
                 neighbors.add(vertex);
-                this.neighbors.put(vertex.getName(),vertex);
+                this.neighborMap.put(vertex.getName(),vertex);
             }
         }
         return neighbors;
     }
 
-    public void pullNeighborPressure(SteinerGraph steinerGraph) throws IOException {
+    public void pullNeighborPressure(byte iterationTime) throws IOException {
         neighborsPressureLocal.clear();
-        for(Vertex neighbor:this.getNeighbors(steinerGraph)){
-            this.server.ask(neighbor.server.getPORT());
-        }
+        this.server.askNeighbors(iterationTime);
     }
 
     public Vertex(int name, boolean isSource) throws IOException {
         this.name = name;
         this.isSource = isSource;
         pressureLocal = new pressureLocal(0);
+        this.setServer(new DistributedServer(this));
     }
 
     public Vertex(int name){
@@ -108,5 +117,13 @@ public class Vertex {
 
     public boolean equals(Object o){
         return (o instanceof Vertex) && (toString().equals(o.toString()));
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }

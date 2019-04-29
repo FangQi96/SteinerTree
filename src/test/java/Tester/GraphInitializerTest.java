@@ -6,9 +6,9 @@ import java.io.*;
 import java.util.*;
 
 public class GraphInitializerTest {
-    public static final int nodeNum= 100;
-    public static final int sourceNum = 5;
-    public static void randomGenerateSource(int sourceNum){
+    public static final int nodeNum= 20;
+    public static final int sourceNum = 3;
+    public static void randomGenerateSource(int nodeNum,int sourceNum){
         File sources = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");
         try {
             sources.createNewFile();
@@ -36,7 +36,7 @@ public class GraphInitializerTest {
 
     }
 
-    public static void readFile(double[][] adjmatrix,List<Integer> sources,String graph,String source){
+    public static void readFile(double[][] adjmatrix,List<Integer> sources,String graph,String source,int sourceNum){
         File file = new File("/home/longinus/Documents/SteinerTree/streetest/" + graph);     //file of the network
         Scanner sc = null;
         try {
@@ -69,8 +69,8 @@ public class GraphInitializerTest {
     public static void main(String[] args0) throws IOException {
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
-        randomGenerateSource(sourceNum);     //randomly generate sources
-        readFile(adjmatrix,sources,"test111.txt","p2psrc.txt");
+        randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
+        readFile(adjmatrix,sources,"test111.txt","p2psrc.txt",sourceNum);
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
         Steiner_Global global = new Steiner_Global(graph, 1.3,0.9, 0.01/400);
 

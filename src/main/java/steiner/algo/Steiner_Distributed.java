@@ -11,7 +11,11 @@ public class Steiner_Distributed {
     private double delta = 1.4;
     private double rho = 0.95;
 
-    public Steiner_Distributed(SteinerGraph graph,double delta,double rho,double edge_threshold){
+    public Steiner_Global getSteiner_global() {
+        return steiner_global;
+    }
+
+    public Steiner_Distributed(SteinerGraph graph, double delta, double rho, double edge_threshold){
         steiner_global = new Steiner_Global(graph,delta,rho,edge_threshold);
         this.delta = delta;
         this.rho = rho;
@@ -25,7 +29,18 @@ public class Steiner_Distributed {
         steiner_global.iteration_ksub_changed(T_c);
     }
 
+    public void collectResult(){
+        for(Edge edge:steiner_global.getGraph().getGraph().edgeSet()){
+            Vertex target = (Vertex)edge.getTarget();
+            Vertex source = (Vertex)edge.getSource();
+            double conductSource = source.getNeighborEdgeMap().get(target).getConductivity();
+            double conductTarget = target.getNeighborEdgeMap().get(source).getConductivity();
+            edge.setConductivity((conductSource+conductTarget)/2);
+        }
+    }
+
     public void visualization(){
+        collectResult();
         steiner_global.cutEdgeProportional(0.1);     //To make the final graph visualization more human-readable
         System.out.println("Final Edge Sum: " + steiner_global.getGraph().getEdgeWeightSum());
         steiner_global.visualization();
@@ -46,21 +61,21 @@ public class Steiner_Distributed {
                 vertexPressure.add(pressureWithCurrentSink[vertex.getName()]);
             }
             vertex.setPressureLocal(vertexPressure,0);
+            vertexPressure.toArray(vertex.getServer().getSlideWindow()[0]);
         }
 
         Set<Vertex> set = steiner_global.getGraph().getGraph().vertexSet();
 
-
         for(Vertex vertex:set){
-            vertex.setServer(new DistributedServer(vertex));
+            vertex.getServer().setVertexNumber(steiner_global.getGraph().getAdjmatrix().length);
+            vertex.getServer().setSourceSet(steiner_global.getSourceSet());
+            vertex.getNeighbors(steiner_global.getGraph());
         }
-        for(Vertex vertex:set){
-            vertex.pullNeighborPressure(steiner_global.getGraph());
-        }
-        Thread.sleep(1000); //This is used for synchronized pressure updating
+        //DistributedServer.setInitialFlag(true);     //Vertices are ready now
+        //Thread.sleep(1000); //This is used for synchronized pressure updating
     }
 
-    public void distributedIteration(int inner,int outer) throws Exception {
+/*    public void distributedIteration(int inner,int outer) throws Exception {
         double[][] adjmatrix = steiner_global.getGraph().getAdjmatrix();
         for(int i=0;i<outer;i++) {
             for (Vertex vertex : steiner_global.getGraph().getGraph().vertexSet()) {
@@ -77,7 +92,7 @@ public class Steiner_Distributed {
                             /********************************************************
                             *Don't cut, leave it to the graph(AKA global controller)*
                             *********************************************************/
-                            sum_below = sum_below + new_conductivity / edge.getWeight();
+/*                            sum_below = sum_below + new_conductivity / edge.getWeight();
                             sum_above = sum_above + new_conductivity * entry.getValue().getPressure().get(count) / edge.getWeight();
 
                         }
@@ -96,11 +111,11 @@ public class Steiner_Distributed {
 
             }
             for(Vertex vertex:steiner_global.getGraph().getGraph().vertexSet()){
-                vertex.pullNeighborPressure(steiner_global.getGraph());
+                vertex.pullNeighborPressure();
             }
             Thread.sleep(100);     //This is used for synchronized pressure updating
         }
-        for(Vertex vertex:steiner_global.getGraph().getGraph().vertexSet())     //Stop all receiving threads
-            vertex.getServerThread().interrupt();
-    }
+        //for(Vertex vertex:steiner_global.getGraph().getGraph().vertexSet())     //Stop all receiving threads
+            //vertex.getServerThread().interrupt();
+    }*/
 }

@@ -9,7 +9,12 @@ public class pressureLocal implements Serializable{
     public pressureLocal(int turn){
         iterationTurn = turn;
     }
-    public void setPressureLocal(ArrayList<Double> pressure,int turn){
+
+    public void setIterationTurn(int iterationTurn) {
+        this.iterationTurn = iterationTurn;
+    }
+
+    public void setPressureLocal(ArrayList<Double> pressure, int turn){
         this.pressure.addAll(pressure);
         this.iterationTurn = turn;
     }

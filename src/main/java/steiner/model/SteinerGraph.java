@@ -64,19 +64,26 @@ public class SteinerGraph extends SimpleWeightedGraph{
         source_num = source.size();
         pressure = new ArrayList<>();
         this.graph = new SimpleWeightedGraph<>(Edge.class);
-        for(int i=0;i<vertex_num-1;i++) {        //Only iterate upper half of the matrix
-            Vertex vertex_i;
-            if (source.contains(i))
-                vertex_i = new Vertex(i, true);
-            else
-                vertex_i = new Vertex(i, false);
+
+        HashMap<Integer,Vertex> vertexMap = new HashMap<>();
+
+        for(int i=0;i<vertex_num;i++){
+            if(source.contains(i)) {
+                Vertex v = new Vertex(i,true);
+                graph.addVertex(v);
+                vertexMap.put(i,v);
+            }
+            else {
+                Vertex v = new Vertex(i,false);
+                graph.addVertex(v);
+                vertexMap.put(i,v);
+            }
+        }//add vertices
+        for(int i=0;i<vertex_num;i++) {        //Only iterate upper half of the matrix
             for (int j = i + 1; j < vertex_num; j++) {
                 if (abs(adjmatrix[i][j]) > 0.0001) {
-                    Vertex vertex_j;
-                    if (source.contains(j))
-                        vertex_j = new Vertex(j, true);
-                    else
-                        vertex_j = new Vertex(j, false);
+                    Vertex vertex_i = vertexMap.get(i);
+                    Vertex vertex_j = vertexMap.get(j);
                     addEdgeWithVertices(graph, vertex_i, vertex_j, adjmatrix[i][j]);
                 }
             }
