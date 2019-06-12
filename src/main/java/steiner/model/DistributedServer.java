@@ -34,7 +34,7 @@ public class DistributedServer extends Thread {
 
 
     private double delta = 1.3;
-    private double rho = 0.9;
+    private double rho = 0.95;
     private double I_0 = 100;
 
     public DistributedServer(Vertex vertex) {
@@ -51,7 +51,7 @@ public class DistributedServer extends Thread {
             e.printStackTrace();
         }
         try {       //Wait for the vertex's initialization
-            sleep(1000);
+            sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class DistributedServer extends Thread {
             for (int i = 0; i < 5; i++) {
                 slideWindow[0][i] = vertexPressure.get(i);
             }
-            iteration(1, 7);
+            iteration(1, 30);
         }
         else{
             this.listener.exit = true;
@@ -73,6 +73,7 @@ public class DistributedServer extends Thread {
             }
         }
         askSocket.close();
+        //System.out.println(vertex.toString()+" "+listner.isInterrupted());
     }
 
     public void listen() {
@@ -94,7 +95,7 @@ public class DistributedServer extends Thread {
                             byte[] sendData = out.PressureLocalToByte(vertex);  //tweak here, sendData should be pressureLocal
                             outPacket = new DatagramPacket(sendData, sendData.length, inPacket.getAddress(), inPacket.getPort() - 10000);
                             socket.send(outPacket);
-                            System.out.println(vertex.toString()+" received an ask and then sent back.");
+                            //System.out.println(vertex.toString()+" received an ask and then sent back.");
                         }else{  //not calculated yet
                             ; //Do nothing, should return a not done yet message
                             System.out.println(vertex.toString()+" received an ask but pressure asked is not ready");
@@ -128,7 +129,10 @@ public class DistributedServer extends Thread {
     public void ask(int dest_port,byte iterationTime) {
         try {
             DatagramPacket ask = new DatagramPacket(new byte[0], 0, InetAddress.getByName("127.0.0.1"), dest_port);
-            byte[] bytes = {0,iterationTime};     //type 0 means it's a pull request asks for [iterationTime] pressure
+            byte[] bytes = {0,iterationTime};//type 0 means it's a pull request asks for [iterationTime] pressure
+            byte[] time = String.valueOf(System.currentTimeMillis()).getBytes();//Time stamp
+            byte[] result = Arrays.copyOf(bytes,bytes.length+time.length);
+            System.arraycopy(time,0,result,bytes.length,time.length);
             ask.setData(bytes);
             askSocket.send(ask);
         } catch (Exception e) {
@@ -144,9 +148,9 @@ public class DistributedServer extends Thread {
                 for(Vertex neighbor:vertex.getNeighborMap().values()){
                     if(!vertex.getNeighborsPressureLocal().containsKey(neighbor)) {
                         ask(neighbor.getServer().getPORT(), (byte) (i - 1));
-                        System.out.println(vertex.toString()+" asks for turn "+(byte)(i-1)+" pressure");
+                        //System.out.println(vertex.toString()+" asks for turn "+(byte)(i-1)+" pressure");
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(1);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -159,7 +163,7 @@ public class DistributedServer extends Thread {
             }
 
             this.vertex.getNeighborsPressureLocal().clear();    //clear up the neighbors map for next iteration
-            System.out.println(vertex.toString()+" has completed Turn "+i);
+            //System.out.println(vertex.toString()+" has completed Turn "+i);
         }
         vertex.setCompleted(true);
     }
@@ -171,12 +175,10 @@ public class DistributedServer extends Thread {
             double sum_below = 0.000001;
             for (ConcurrentHashMap.Entry<Vertex, pressureLocal> entry : vertex.getNeighborsPressureLocal().entrySet()) {
                 Edge edgeLocal = this.vertex.getNeighborEdgeMap().get(entry.getKey());
-                double flux = Math.abs(edgeLocal.getConductivity() * (vertex.getPressureLocal().getPressure().get(count) - entry.getValue().getPressure().get(count)) / edgeLocal.getWeight());
-                //double pi = vertex.getPressureLocal().getPressure().get(count);
-                //double pj = entry.getValue().getPressure().get(count);
-                //double conduct = edgeLocal.getConductivity();
-                //double flux = Math.abs(conduct*(pi-pj)/edgeLocal.getWeight());
-                double new_conductivity = (Math.pow(flux, delta) / (I_0 * I_0 / vertexNumber * vertexNumber + Math.pow(flux, delta))) + rho * edgeLocal.getConductivity();
+                double flux = Math.abs(edgeLocal.getConductivity() * (vertex.getPressureLocal().getPressure().get(count) -
+                        entry.getValue().getPressure().get(count)) / edgeLocal.getWeight());
+                double new_conductivity = (Math.pow(flux, delta) / (I_0 * I_0 / vertexNumber * vertexNumber +
+                        Math.pow(flux, delta))) + rho * edgeLocal.getConductivity();
                 edgeLocal.setConductivity(new_conductivity);
                 /********************************************************
                  *Don't cut, leave it to the graph(AKA global controller)*

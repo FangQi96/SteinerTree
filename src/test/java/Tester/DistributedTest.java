@@ -15,20 +15,20 @@ public class DistributedTest{
     public static void main(String[] args0) throws Exception {
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         ArrayList<Integer> sources = new ArrayList<>();
-        //randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
+        randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
         GraphInitializerTest.readFile(adjmatrix,sources,"test111.txt","p2psrc.txt",sourceNum);
 
+
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
-        Steiner_Distributed steiner_distributed = new Steiner_Distributed(graph,1.3,0.9,0.01/400);
-        steiner_distributed.globalPreCalculation(25);
+        Steiner_Distributed steiner_distributed = new Steiner_Distributed(graph,1.3,0.88,0.01/100);
+        steiner_distributed.globalPreCalculation(15);
         steiner_distributed.vertexInitial();
-        //steiner_distributed.distributedIteration(2,70);
-        //Thread.sleep(10000);
 
         for(Vertex vertex:steiner_distributed.getSteiner_global().getGraph().getGraph().vertexSet()){
             while(!vertex.isCompleted())
-                Thread.sleep(50);
+                Thread.sleep(1);
         }
+
         steiner_distributed.visualization();
    }
 }

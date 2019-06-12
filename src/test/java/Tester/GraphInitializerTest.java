@@ -6,8 +6,8 @@ import java.io.*;
 import java.util.*;
 
 public class GraphInitializerTest {
-    public static final int nodeNum= 20;
-    public static final int sourceNum = 3;
+    public static final int nodeNum= 100;
+    public static final int sourceNum = 5;
     public static void randomGenerateSource(int nodeNum,int sourceNum){
         File sources = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");
         try {
@@ -71,12 +71,12 @@ public class GraphInitializerTest {
         List<Integer> sources = new ArrayList<>();
         randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
         readFile(adjmatrix,sources,"test111.txt","p2psrc.txt",sourceNum);
+
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
-        Steiner_Global global = new Steiner_Global(graph, 1.3,0.9, 0.01/400);
+        Steiner_Global global = new Steiner_Global(graph, 1.3,0.95, 0.01/100);
 
         global.initial();
         global.iteration_ksub_changed(100);
         global.visualization();
-        //global.cutEdgeProportional(0.1);
    }
 }

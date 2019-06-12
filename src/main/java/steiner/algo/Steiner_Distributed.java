@@ -42,6 +42,7 @@ public class Steiner_Distributed {
     public void visualization(){
         collectResult();
         steiner_global.cutEdgeProportional(0.1);     //To make the final graph visualization more human-readable
+
         System.out.println("Final Edge Sum: " + steiner_global.getGraph().getEdgeWeightSum());
         steiner_global.visualization();
     }

@@ -1,6 +1,4 @@
-steiner/algo/Steiner_Global.class
-GraphInitializerTest.class
-steiner/model/Vertex.class
-GraphInitializerTest$1.class
 steiner/model/Edge.class
 steiner/model/SteinerGraph.class
+steiner/algo/Steiner_Global.class
+steiner/model/Vertex.class

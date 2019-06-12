@@ -46,8 +46,8 @@ public class Steiner_Global {
     }
 
     private double I_0 = 100;   //todo
-    private double delta = 1.5;
-    private double rho = 0.06;
+    private double delta = 1.3;
+    private double rho = 0.9;
     private double edge_threshold = 0.000000004;
 
 
@@ -188,7 +188,7 @@ public class Steiner_Global {
         for(Edge e:edges){
             Vertex source = (Vertex)e.getSource();
             Vertex target = (Vertex)e.getTarget();
-            double source_sum,target_sum,P_source,P_target;
+            double source_sum,target_sum;
             source_sum = target_sum = 0;
             for(Edge e1:graph.getGraph().incomingEdgesOf(source))
                 source_sum += e1.getConductivity();
