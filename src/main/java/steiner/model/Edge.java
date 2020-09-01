@@ -4,7 +4,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 public class Edge extends DefaultWeightedEdge{
     private double conductivity;
     public Edge(){
-        conductivity = 2;
+        conductivity = 1;
     }
 
     public double getConductivity() {

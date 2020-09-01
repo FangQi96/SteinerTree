@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DistributedServer extends Thread {
+    /*
     public int getPORT() {
         return PORT;
     }
@@ -183,6 +184,7 @@ public class DistributedServer extends Thread {
                 /********************************************************
                  *Don't cut, leave it to the graph(AKA global controller)*
                  ********************************************************/
+/*
                 sum_below = sum_below + new_conductivity / edgeLocal.getWeight();
                 sum_above = sum_above + new_conductivity * entry.getValue().getPressure().get(count) / edgeLocal.getWeight();
 
@@ -211,4 +213,5 @@ public class DistributedServer extends Thread {
     public void setSourceSet(Set<Vertex> sourceSet) {
         this.sourceSet = sourceSet;
     }
+    */
 }

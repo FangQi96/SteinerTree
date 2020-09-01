@@ -16,7 +16,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
     private int vertex_num;
     private int source_num;
 
-    public ArrayList<Integer> getSource_list() {
+    public ArrayList<Integer> getSourceList() {
         return source_list;
     }
 
@@ -39,6 +39,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
 
     private Graph<Vertex,Edge> graph;
 
+    /*
     public void printPressure(){
         for(double[] vector:pressure){
             for(int i=0;i<vector.length;i++){
@@ -50,6 +51,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
             System.out.println();
         }
     }
+    */
 
     /*******************************************************************
      TODO***************************************************************
@@ -99,7 +101,7 @@ public class SteinerGraph extends SimpleWeightedGraph{
         return sum;
     }
 
-    public int getSource_num() {
+    public int getSourceNum() {
         return source_num;
     }
 }

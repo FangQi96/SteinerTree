@@ -40,18 +40,16 @@ public class Vertex {
         this.pressureLocal.setPressureLocal(pressure,turn);
     }
 
+    /*** Only needed in Distributed Algorithm ***
     private ConcurrentHashMap<Vertex,pressureLocal> neighborsPressureLocal = new ConcurrentHashMap<>();
-
     public ConcurrentHashMap<Vertex,pressureLocal> getNeighborsPressureLocal() {
         return neighborsPressureLocal;
     }
-
     public HashMap<Vertex, Edge> getNeighborEdgeMap() {
         return neighborEdgeMap;
     }
-
     private HashMap<Vertex,Edge> neighborEdgeMap = new HashMap<>();
-
+    */
     private final int name;
 
     public boolean isSource() {
@@ -70,6 +68,7 @@ public class Vertex {
         return neighborList;
     }
 
+    /*
     public Set<Vertex> getNeighbors(SteinerGraph steinerGraph){
         Set<Vertex> neighbors = new HashSet<>();
         Set<Vertex> vertexSet = steinerGraph.getGraph().vertexSet();
@@ -90,18 +89,18 @@ public class Vertex {
         neighborsPressureLocal.clear();
         this.server.askNeighbors(iterationTime);
     }
-
+    */
     public Vertex(int name, boolean isSource) throws IOException {
         this.name = name;
         this.isSource = isSource;
-        pressureLocal = new pressureLocal(0);
-        this.setServer(new DistributedServer(this));
+        //pressureLocal = new pressureLocal(0);
+        //this.setServer(new DistributedServer(this));
     }
 
     public Vertex(int name){
         this.name = name;
         this.isSource = false;
-        pressureLocal = new pressureLocal(0);
+        //pressureLocal = new pressureLocal(0);
     }
 
     public String toString(){   //when using for visualization, the vertex's index begins from 1

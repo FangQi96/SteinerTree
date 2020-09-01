@@ -6,10 +6,10 @@ import java.io.*;
 import java.util.*;
 
 public class GraphInitializerTest {
-    public static final int nodeNum= 100;
-    public static final int sourceNum = 5;
+    public static final int nodeNum= 1000;
+    public static final int sourceNum = 20;
     public static void randomGenerateSource(int nodeNum,int sourceNum){
-        File sources = new File("/home/longinus/Documents/SteinerTree/streetest/p2psrc.txt");
+        File sources = new File("/Users/longinus/Documents/streetest/p2psrc.txt");
         try {
             sources.createNewFile();
         } catch (IOException e) {
@@ -22,11 +22,11 @@ public class GraphInitializerTest {
             }
             Collections.shuffle(arrayList);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(sources));
-            bufferedWriter.newLine();
             for(int i=0;i<sourceNum;i++){
                 int sourceIndex = arrayList.get(i);
                 bufferedWriter.write(String.valueOf(sourceIndex));
-                bufferedWriter.newLine();
+                if(i!=sourceNum-1)
+                    bufferedWriter.newLine();
             }
             bufferedWriter.flush();
             bufferedWriter.close();
@@ -37,7 +37,7 @@ public class GraphInitializerTest {
     }
 
     public static void readFile(double[][] adjmatrix,List<Integer> sources,String graph,String source,int sourceNum){
-        File file = new File("/home/longinus/Documents/SteinerTree/streetest/" + graph);     //file of the network
+        File file = new File("/Users/longinus/Documents/streetest/" + graph);     //file of the network
         Scanner sc = null;
         try {
             sc = new Scanner(file);
@@ -54,7 +54,7 @@ public class GraphInitializerTest {
         }
 
 
-        File file_source = new File("/home/longinus/Documents/SteinerTree/streetest/" + source);       //file of the sources
+        File file_source = new File("/Users/longinus/Documents/streetest/" + source);       //file of the sources
         try {
             Scanner sc1 = new Scanner(file_source);
             for(int i=0;i<sourceNum;i++){
@@ -69,14 +69,15 @@ public class GraphInitializerTest {
     public static void main(String[] args0) throws IOException {
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
-        randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
-        readFile(adjmatrix,sources,"test111.txt","p2psrc.txt",sourceNum);
+        //randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
+        readFile(adjmatrix,sources,"1000nodes.txt","p2psrc.txt",sourceNum);
 
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
-        Steiner_Global global = new Steiner_Global(graph, 1.3,0.95, 0.01/100);
+        Steiner_Global global = new Steiner_Global(graph, 0.00003,0.0014);
 
         global.initial();
-        global.iteration_ksub_changed(100);
+        //global.initial_approx();
+        global.iteration_ksub_changed(1000);
         global.visualization();
    }
 }

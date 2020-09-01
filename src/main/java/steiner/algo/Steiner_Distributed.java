@@ -3,7 +3,6 @@ package steiner.algo;
 import steiner.model.*;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Steiner_Distributed {
     private Steiner_Global steiner_global;
@@ -16,7 +15,7 @@ public class Steiner_Distributed {
     }
 
     public Steiner_Distributed(SteinerGraph graph, double delta, double rho, double edge_threshold){
-        steiner_global = new Steiner_Global(graph,delta,rho,edge_threshold);
+        steiner_global = new Steiner_Global(graph,delta,rho);
         this.delta = delta;
         this.rho = rho;
     }
@@ -28,7 +27,7 @@ public class Steiner_Distributed {
         steiner_global.initial();
         steiner_global.iteration_ksub_changed(T_c);
     }
-
+/*
     public void collectResult(){
         for(Edge edge:steiner_global.getGraph().getGraph().edgeSet()){
             Vertex target = (Vertex)edge.getTarget();
@@ -53,11 +52,12 @@ public class Steiner_Distributed {
         *ssure based on vertex, send them down and then update the*
         *neighbor's pressure via Socket communication**************
      	***********************************************************/
+/*
         Set<Vertex> sourceSet = steiner_global.getSourceSet();
         for(Vertex vertex:steiner_global.getGraph().getGraph().vertexSet()){
             ArrayList<Double> vertexPressure = new ArrayList<>();
             for(Vertex sink:sourceSet){
-                int sinkIndex = steiner_global.getGraph().getSource_list().indexOf(sink.getName());
+                int sinkIndex = steiner_global.getGraph().getSourceList().indexOf(sink.getName());
                 double[] pressureWithCurrentSink = steiner_global.getGraph().getPressure().get(sinkIndex);
                 vertexPressure.add(pressureWithCurrentSink[vertex.getName()]);
             }

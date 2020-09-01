@@ -13,6 +13,7 @@ public class DistributedTest{
     public static final int sourceNum = 5;
 
     public static void main(String[] args0) throws Exception {
+        /*
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         ArrayList<Integer> sources = new ArrayList<>();
         randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
@@ -30,5 +31,6 @@ public class DistributedTest{
         }
 
         steiner_distributed.visualization();
+        */
    }
 }
