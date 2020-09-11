@@ -50,7 +50,7 @@ public class ShortestPathTree {
     }
 
     public static void readFile(double[][] adjmatrix,List<Integer> sources,String graph,String source,int sourceNum){
-        File file = new File("/Users/longinus/Documents/streetest/" + graph);     //file of the network
+        File file = new File("/home/longinus/Documents/streetest/" + graph);     //file of the network
         Scanner sc = null;
         try {
             sc = new Scanner(file);
@@ -67,7 +67,7 @@ public class ShortestPathTree {
         }
 
 
-        File file_source = new File("/Users/longinus/Documents/streetest/" + source);       //file of the sources
+        File file_source = new File("/home/longinus/Documents/streetest/" + source);       //file of the sources
         try {
             Scanner sc1 = new Scanner(file_source);
             for(int i=0;i<sourceNum;i++){
@@ -80,11 +80,11 @@ public class ShortestPathTree {
     }
 
     public static void main(String[] args0) throws IOException {
-        int nodeNum = 100;
+        int nodeNum = 400;
         int sourceNum = 20;
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
-        readFile(adjmatrix,sources,"group0.txt","p2psrc.txt",sourceNum);
+        readFile(adjmatrix,sources,"400nodes.txt","p2psrc.txt",sourceNum);
 
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
         ShortestPathTree SPT = new ShortestPathTree(graph);

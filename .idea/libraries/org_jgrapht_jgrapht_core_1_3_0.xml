@@ -7,7 +7,8 @@
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="jar://$USER_HOME$/.ideaLibSources/jgrapht-core-1.3.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.3.0/jgrapht-core-1.3.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/jheaps/jheaps/0.9/jheaps-0.9-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
