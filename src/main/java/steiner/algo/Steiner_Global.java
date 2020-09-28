@@ -9,6 +9,7 @@ import org.jgrapht.alg.spanning.PrimMinimumSpanningTree;
 import steiner.model.Edge;
 import steiner.model.SteinerGraph;
 import steiner.model.Vertex;
+import com.aparapi.*;
 
 import java.util.*;
 
@@ -33,10 +34,11 @@ public class Steiner_Global {
         this.graph = graph;
     }
 
-    public Steiner_Global(SteinerGraph graph,double delta,double rho){
+    public Steiner_Global(SteinerGraph graph,double delta,double rho,double edgeThreshold){
         this.graph = graph;
         this.delta = delta;
         this.rho = rho;
+        this.edgeThreshold = edgeThreshold;
 
         sourceSet  = new HashSet<>();
         for(Vertex vertex:this.graph.getGraph().vertexSet()){
@@ -50,6 +52,7 @@ public class Steiner_Global {
     private double I_0 = 100;   //todo
     private double delta;
     private double rho;
+    private double edgeThreshold;
 
 
 
@@ -127,44 +130,62 @@ public class Steiner_Global {
         }
         System.out.println("Initialization completed.");
     }
-
-    public void iteration_ksub(int T_c, final Vertex sink,int outerloop, final ArrayList<double[]> prevPressure, ExecutorService threadPool){
+    public void iteration_ksub_gpu(int T_c, final Vertex sink,int outerloop, final ArrayList<double[]> prevPressure, ExecutorService threadPool){
         final double[][] adjmatrix = graph.getAdjmatrix();
         for(int i=0;i<T_c;i++){
+            Edge[] edgeArray = graph.getGraph().edgeSet().toArray(new Edge[graph.getGraph().edgeSet().size()]);
+            final int size = edgeArray.length;
             final double[] pressure = graph.getPressure().get(graph.getSourceList().indexOf(sink.getName()));
-            final CountDownLatch edgeLatch = new CountDownLatch(graph.getGraph().edgeSet().size());
-            for(final Edge edge:graph.getGraph().edgeSet()){  //Eq6
-                threadPool.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        try{
-                            Vertex target = (Vertex)edge.getTarget();
-                            Vertex source = (Vertex)edge.getSource();
-                            double Kij = 0;
-                            for(Vertex s: sourceSet){
-                                final double[] sourcePressure = prevPressure.get(graph.getSourceList().indexOf(s.getName()));
-                                Kij += Math.abs(sourcePressure[target.getName()] - sourcePressure[source.getName()]);
-                            }
+            final double[] conductivityArray = new double[edgeArray.length];
+            final double[] weightArray = new double[edgeArray.length];
+            final int[] targetIndex = new int[edgeArray.length];
+            final int[] sourceIndex = new int[edgeArray.length];
+            for(int j=0;j<edgeArray.length;j++) {
+                conductivityArray[j] = edgeArray[j].getConductivity();
+                weightArray[j] = edgeArray[j].getWeight();
+                targetIndex[j] = ((Vertex)edgeArray[j].getTarget()).getName();
+                sourceIndex[j] = ((Vertex)edgeArray[j].getSource()).getName();
+            }
+            final double[][] sourcesPressures = prevPressure.toArray(new double[0][0]);
 
-                            //double temp1 = delta * Kij / edge.getWeight();
-                            //double temp2 = rho * edge.getWeight();
-                            //System .out .println(temp1 - temp2); //Check the difference of the 2 factors
-
-                            Kij = 1 + delta * Kij / edge.getWeight() - rho * edge.getWeight();
-                            double new_conductivity = Kij * edge.getConductivity();
-                            edge.setConductivity(new_conductivity);
-                        }finally {
-                            edgeLatch.countDown();
-                        }
+            Kernel edgeKernel = new Kernel() {
+                @Override
+                public void run() {
+                    int gid = getGlobalId();
+                    double Kij = 0;
+                    for(int i=0; i<sourcesPressures.length; i++){
+                        Kij += Math.abs(sourcesPressures[i][targetIndex[gid]] - sourcesPressures[i][sourceIndex[gid]]);
                     }
-                });
-            }
-            try {
-                edgeLatch.await();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
+                    Kij = 1 + 0.0005 * Kij / weightArray[gid] - 0.001 * weightArray[gid];
+                    double new_conductivity = Kij * conductivityArray[gid];
+                    conductivityArray[gid] = new_conductivity;
+                }
+            };
+            edgeKernel.execute(size);
+            edgeKernel.dispose();
 
+            for(int j=0;j<edgeArray.length;j++){
+                edgeArray[j].setConductivity(conductivityArray[j]);
+            }
+/*
+            for(final Edge edge:graph.getGraph().edgeSet()){  //Eq6
+                Vertex target = (Vertex)edge.getTarget();
+                Vertex source = (Vertex)edge.getSource();
+                double Kij = 0;
+                for(Vertex s: sourceSet){
+                    final double[] sourcePressure = prevPressure.get(graph.getSourceList().indexOf(s.getName()));
+                    Kij += Math.abs(sourcePressure[target.getName()] - sourcePressure[source.getName()]);
+                }
+
+                //double temp1 = delta * Kij / edge.getWeight();
+                //double temp2 = rho * edge.getWeight();
+                //System .out .println(temp1 - temp2); //Check the difference of the 2 factors
+
+                Kij = 1 + delta * Kij / edge.getWeight() - rho * edge.getWeight();
+                double new_conductivity = Kij * edge.getConductivity();
+                edge.setConductivity(new_conductivity);
+            }
+*/
             if(outerloop%10 == 0)
                 this.cutEdgeProportional( 0.28 * outerloop/10);
 
@@ -204,16 +225,85 @@ public class Steiner_Global {
             } catch (Exception e){
                 e.printStackTrace();
             }
+        }
+    }
 
-            /*
-            double sum = 0;
-            for(Vertex neighbor: sink.getNeighbor(graph.getGraph())){
-                Edge edge = graph.getGraph().getEdge(neighbor,sink);
-                double flux = edge.getConductivity()*(pressure[sink.getName()]-pressure[neighbor.getName()])/edge.getWeight();
-                sum += flux;
+    public void iteration_ksub(int T_c, final Vertex sink,int outerloop, final ArrayList<double[]> prevPressure, ExecutorService threadPool){
+        final double[][] adjmatrix = graph.getAdjmatrix();
+        for(int i=0;i<T_c;i++){
+            final double[] pressure = graph.getPressure().get(graph.getSourceList().indexOf(sink.getName()));
+            final CountDownLatch edgeLatch = new CountDownLatch(graph.getGraph().edgeSet().size());
+            for(final Edge edge:graph.getGraph().edgeSet()){  //Eq6
+                threadPool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            Vertex target = (Vertex)edge.getTarget();
+                            Vertex source = (Vertex)edge.getSource();
+                            double Kij = 0;
+                            for(Vertex s: sourceSet){
+                                final double[] sourcePressure = prevPressure.get(graph.getSourceList().indexOf(s.getName()));
+                                Kij += Math.abs(sourcePressure[target.getName()] - sourcePressure[source.getName()]);
+                            }
+
+                            //double temp1 = delta * Kij / edge.getWeight();
+                            //double temp2 = rho * edge.getWeight();
+                            //System .out .println(temp1 - temp2); //Check the difference of the 2 factors
+
+                            Kij = 1 + delta * Kij / edge.getWeight() - rho * edge.getWeight();
+                            double new_conductivity = Kij * edge.getConductivity();
+                            edge.setConductivity(new_conductivity);
+                        }finally {
+                            edgeLatch.countDown();
+                        }
+                    }
+                });
             }
-            System.out.println("Sink:"+sink.getName() + " Total flux " + sum);
-            */
+            try {
+                edgeLatch.await();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            if(outerloop%10 == 0)
+                this.cutEdgeProportional( edgeThreshold * outerloop/10);
+
+            final CountDownLatch vertexLatch = new CountDownLatch(graph.getGraph().vertexSet().size());
+
+            for(final Vertex vertex:graph.getGraph().vertexSet()){
+                threadPool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            double sum_above = 0;
+                            double sum_below = 0.000001;
+                            for(Vertex neighbor:vertex.getNeighbor(graph.getGraph())){
+                                double conductivity = graph.getGraph().getEdge(vertex,neighbor).getConductivity();
+                                sum_below = sum_below + conductivity / adjmatrix[vertex.getName()][neighbor.getName()];
+                                sum_above = sum_above + conductivity * pressure[neighbor.getName()] / adjmatrix[vertex.getName()][neighbor.getName()];
+                            }
+
+                            if(vertex.isSource()){
+                                if(vertex.getName()==sink.getName())
+                                    sum_above = 0;
+                                else
+                                    sum_above = sum_above + I_0;
+                            }else
+                                ;
+
+                            graph.getPressure().get(graph.getSourceList().indexOf(sink.getName()))[vertex.getName()] = sum_above/sum_below;
+                        } finally {
+                            vertexLatch.countDown();
+                        }
+                    }
+                });
+            }
+
+            try {
+                vertexLatch.await();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -224,6 +314,7 @@ public class Steiner_Global {
             for (Vertex sink : sourceSet) {
                 iteration_ksub(1, sink, i, prevPressure, fixedThreadPool);
             }
+            //System.out.println("Current round: " + i);
         }
         fixedThreadPool.shutdown();
 

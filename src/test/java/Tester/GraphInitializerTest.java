@@ -6,8 +6,8 @@ import java.io.*;
 import java.util.*;
 
 public class GraphInitializerTest {
-    public static final int nodeNum= 1000;
-    public static final int sourceNum = 20;
+    public static final int nodeNum= 400;
+    public static final int sourceNum = 40;
     public static void randomGenerateSource(int nodeNum,int sourceNum){
         File sources = new File("/home/longinus/Documents/streetest/p2psrc.txt");
         try {
@@ -69,19 +69,24 @@ public class GraphInitializerTest {
     public static void main(String[] args0) throws IOException {
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
-        randomGenerateSource(nodeNum,sourceNum);     //randomly generate sources
-        readFile(adjmatrix,sources,"1000nodes.txt","p2psrc.txt",sourceNum);
+        //randomGenerateSource(nodeNum,sourceNum);     //randomly generates sources
+        readFile(adjmatrix,sources,"400nodes_dense.txt","p2psrc.txt",sourceNum);
 
         //SteinerGraph accurateGraph = new SteinerGraph(adjmatrix, sources);
-        //Steiner_Global accurateGlobal = new Steiner_Global(accurateGraph, 0.00004,0.0018);
+        //Steiner_Global accurateGlobal = new Steiner_Global(accurateGraph, 0.00002,0.015,0.2);
         //accurateGlobal.initial();
-        //accurateGlobal.iteration_ksub_changed(1200);
+        //accurateGlobal.iteration_ksub_changed(230);
         //accurateGlobal.visualization();
+        long startTime = System.currentTimeMillis();
 
         SteinerGraph approxGraph = new SteinerGraph(adjmatrix, sources);
-        Steiner_Global approxGlobal = new Steiner_Global(approxGraph, 0.00004, 0.0007);
+        Steiner_Global approxGlobal = new Steiner_Global(approxGraph, 0.00002, 0.0025,0.4);
+        long startTime1 = System.currentTimeMillis();
         approxGlobal.initial_approx();
-        approxGlobal.iteration_ksub_changed(1200);
+        approxGlobal.iteration_ksub_changed(350);
+
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime + "ms");
         //approxGlobal.visualization();
    }
 }

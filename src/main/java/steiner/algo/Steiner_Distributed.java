@@ -15,7 +15,7 @@ public class Steiner_Distributed {
     }
 
     public Steiner_Distributed(SteinerGraph graph, double delta, double rho, double edge_threshold){
-        steiner_global = new Steiner_Global(graph,delta,rho);
+        steiner_global = new Steiner_Global(graph,delta,rho,edge_threshold);
         this.delta = delta;
         this.rho = rho;
     }

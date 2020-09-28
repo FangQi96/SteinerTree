@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="SteinerTree" target="8" />
+      <module name="SteinerTree" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

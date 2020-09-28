@@ -81,10 +81,10 @@ public class ShortestPathTree {
 
     public static void main(String[] args0) throws IOException {
         int nodeNum = 400;
-        int sourceNum = 20;
+        int sourceNum = 30;
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
-        readFile(adjmatrix,sources,"400nodes.txt","p2psrc.txt",sourceNum);
+        readFile(adjmatrix,sources,"400nodes_dense.txt","p2psrc.txt",sourceNum);
 
         SteinerGraph graph = new SteinerGraph(adjmatrix, sources);
         ShortestPathTree SPT = new ShortestPathTree(graph);
