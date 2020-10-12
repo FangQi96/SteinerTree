@@ -1,4 +1,12 @@
+steiner/algo/Steiner_Global$3.class
+steiner/algo/Steiner_Global$2.class
+steiner/algo/Steiner_Distributed.class
+steiner/algo/Steiner_Global$4.class
 steiner/model/Edge.class
 steiner/model/SteinerGraph.class
+steiner/algo/ShortestPathTree.class
 steiner/algo/Steiner_Global.class
+steiner/algo/Steiner_Global$1.class
 steiner/model/Vertex.class
+steiner/model/DistributedServer.class
+steiner/model/pressureLocal.class

@@ -1,5 +1,6 @@
-/home/longinus/workspace/SteinerTree/src/test/java/Tester/MatrixSolverTest.java
-/home/longinus/workspace/SteinerTree/src/test/java/Tester/DistributedTest.java
-/home/longinus/workspace/SteinerTree/src/test/java/Tester/AdjacencyMatrixGenerator.java
-/home/longinus/workspace/SteinerTree/src/test/java/Tester/GraphInitializerTest.java
-/home/longinus/workspace/SteinerTree/src/test/java/Tester/SimpleWeightedGraphTest.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/GraphInitializerTest.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/SimpleWeightedGraphTest.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/LeafSpineGenerator.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/DistributedTest.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/AdjacencyMatrixGenerator.java
+/Users/longinus/Github/SteinerTree/src/test/java/Tester/MatrixSolverTest.java

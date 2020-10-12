@@ -6,10 +6,10 @@ import java.io.*;
 import java.util.*;
 
 public class GraphInitializerTest {
-    public static final int nodeNum= 400;
-    public static final int sourceNum = 40;
+    public static final int nodeNum= 1000;
+    public static final int sourceNum = 20;
     public static void randomGenerateSource(int nodeNum,int sourceNum){
-        File sources = new File("/home/longinus/Documents/streetest/p2psrc.txt");
+        File sources = new File("/Users/longinus/Documents/streetest/p2psrc.txt");
         try {
             sources.createNewFile();
         } catch (IOException e) {
@@ -37,7 +37,7 @@ public class GraphInitializerTest {
     }
 
     public static void readFile(double[][] adjmatrix,List<Integer> sources,String graph,String source,int sourceNum){
-        File file = new File("/home/longinus/Documents/streetest/" + graph);     //file of the network
+        File file = new File("/Users/longinus/Documents/streetest/" + graph);     //file of the network
         Scanner sc = null;
         try {
             sc = new Scanner(file);
@@ -54,7 +54,7 @@ public class GraphInitializerTest {
         }
 
 
-        File file_source = new File("/home/longinus/Documents/streetest/" + source);       //file of the sources
+        File file_source = new File("/Users/longinus/Documents/streetest/" + source);       //file of the sources
         try {
             Scanner sc1 = new Scanner(file_source);
             for(int i=0;i<sourceNum;i++){
@@ -70,7 +70,7 @@ public class GraphInitializerTest {
         double[][] adjmatrix = new double[nodeNum][nodeNum];
         List<Integer> sources = new ArrayList<>();
         //randomGenerateSource(nodeNum,sourceNum);     //randomly generates sources
-        readFile(adjmatrix,sources,"400nodes_dense.txt","p2psrc.txt",sourceNum);
+        readFile(adjmatrix,sources,"1000nodes.txt","p2psrc.txt",sourceNum);
 
         //SteinerGraph accurateGraph = new SteinerGraph(adjmatrix, sources);
         //Steiner_Global accurateGlobal = new Steiner_Global(accurateGraph, 0.00002,0.015,0.2);
@@ -80,7 +80,7 @@ public class GraphInitializerTest {
         long startTime = System.currentTimeMillis();
 
         SteinerGraph approxGraph = new SteinerGraph(adjmatrix, sources);
-        Steiner_Global approxGlobal = new Steiner_Global(approxGraph, 0.00002, 0.0025,0.4);
+        Steiner_Global approxGlobal = new Steiner_Global(approxGraph, 0.00002, 0.0005,0.36);
         long startTime1 = System.currentTimeMillis();
         approxGlobal.initial_approx();
         approxGlobal.iteration_ksub_changed(350);
